@@ -1,4 +1,5 @@
 import tkinter as tk
+import math
 
 def button_click(char):
     current = entry.get()
@@ -21,13 +22,26 @@ def backspace():
     current = entry.get()
     entry.delete(len(current) - 1)
 
+def square_root():
+    try:
+        value = float(entry.get())
+        result = math.sqrt(value)
+        entry.delete(0, tk.END)
+        entry.insert(0, str(result))
+    except ValueError:
+        entry.delete(0, tk.END)
+        entry.insert(0, "Error")
+
+def add_pi():
+    entry.insert(tk.END, math.pi)
+
 # Create the main window
 root = tk.Tk()
 root.title("Calculator")
-root.configure(bg='lightgray')  # Set background color
+root.configure(bg='black')  # Set background color
 
 # Create entry widget
-entry = tk.Entry(root, width=20, font=('Arial', 16))
+entry = tk.Entry(root, width=20, font=('Arial', 16), bg='lightgreen', fg='black')
 entry.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
 # Define buttons
@@ -36,26 +50,24 @@ buttons = [
     ('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('*', 2, 3),
     ('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('-', 3, 3),
     ('0', 4, 0), ('.', 4, 1), ('=', 4, 2), ('+', 4, 3),
-    ('<-', 4, 0)  # Backspace button
+    ('AC', 5, 0), ('<-', 5, 1), ('√', 5, 2), ('π', 5, 3)  # All Clear, Backspace, Square Root, Pi buttons
 ]
 
 # Add buttons to the window
 for (text, row, col) in buttons:
-    btn = tk.Button(root, text=text, width=5, height=2, font=('Arial', 14))
-    if text == '<-':  # Backspace button
+    btn = tk.Button(root, text=text, width=5, height=2, font=('Arial', 14), bg='orange' if text in ['=', '.','<-','√','π','AC'] else 'gray' if text.isdigit() else 'black', fg='black' if text in ['=', '.','<-','√','π','AC'] else 'white')
+    if text == 'AC':
+        btn.config(command=clear)
+    elif text == '=':
+        btn.config(command=calculate)
+    elif text == '<-':
         btn.config(command=backspace)
+    elif text == '√':
+        btn.config(command=square_root)
+    elif text == 'π':
+        btn.config(command=add_pi)
     else:
         btn.config(command=lambda t=text: button_click(t))
     btn.grid(row=row, column=col, padx=5, pady=5)
-
-# Clear button
-clear_btn = tk.Button(root, text='C', width=5, height=2, font=('Arial', 14),
-                      command=clear)
-clear_btn.grid(row=5, column=1, columnspan=1, padx=5, pady=5)
-
-# Equal button
-equal_btn = tk.Button(root, text='=', width=5, height=2, font=('Arial', 14),
-                      command=calculate)
-equal_btn.grid(row=5, column=2, columnspan=1, padx=5, pady=5)
 
 root.mainloop()
